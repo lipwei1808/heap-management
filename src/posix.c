@@ -1,4 +1,4 @@
-/* malloc.c: POSIX API Implementation */
+/* posix.c: POSIX API Implementation */
 
 #include "malloc/counters.h"
 #include "malloc/freelist.h"
