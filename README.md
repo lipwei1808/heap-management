@@ -93,7 +93,5 @@ brainstorming questions are not required.
 
 > Describe any known errors, bugs, or deviations from the requirements.
 
-## Extra Credit
-
 [Project 03]:       https://www3.nd.edu/~pbui/teaching/cse.30341.fa20/project03.html
 [CSE.30341.FA20]:   https://www3.nd.edu/~pbui/teaching/cse.30341.fa20/
