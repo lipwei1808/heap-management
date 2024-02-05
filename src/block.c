@@ -50,7 +50,16 @@ Block *	block_allocate(size_t size) {
  **/
 bool	block_release(Block *block) {
     // TODO: Implement block release
+    // If block is within the heap
+    if (block->next != block) { 
+        
+    }
+
+    // If block is end of heap
     size_t allocated = block->capacity + sizeof(Block);
+    if (sbrk(-1 * (sizeof(Block) + block->capacity)) == SBRK_FAILURE) {
+        return false;
+    }
     Counters[BLOCKS]--;
     Counters[SHRINKS]++;
     Counters[HEAP_SIZE] -= allocated;
