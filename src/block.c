@@ -50,10 +50,10 @@ Block *	block_allocate(size_t size) {
  **/
 bool	block_release(Block *block) {
     // TODO: Implement block release
-    // size_t allocated = 0;
-    // Counters[BLOCKS]--;
-    // Counters[SHRINKS]++;
-    // Counters[HEAP_SIZE] -= allocated;
+    size_t allocated = block->capacity + sizeof(Block);
+    Counters[BLOCKS]--;
+    Counters[SHRINKS]++;
+    Counters[HEAP_SIZE] -= allocated;
     return true;
 }
 
@@ -65,6 +65,14 @@ bool	block_release(Block *block) {
  **/
 Block * block_detach(Block *block) {
     // TODO: Detach block from neighbors by updating previous and next block
+    if (block != NULL) {
+        Block* prev = block->prev;
+        Block* next = block->next;
+        prev->next = next;
+        next->prev = prev;
+        block->next = block;
+        block->prev = block;
+    }
     return block;
 }
 
@@ -82,6 +90,7 @@ Block * block_detach(Block *block) {
  **/
 bool	block_merge(Block *dst, Block *src) {
     // TODO: Implement block merge
+    
     // Counters[MERGES]++;
     // Counters[BLOCKS]--;
     return false;
@@ -101,8 +110,25 @@ bool	block_merge(Block *dst, Block *src) {
  **/
 Block * block_split(Block *block, size_t size) {
     // TODO: Implement block split
-    // Counters[SPLITS]++;
-    // Counters[BLOCKS]++;
+    if (block->capacity < ALIGN(size) + sizeof(Block)) {
+        return block;
+    }
+
+    // Get ptr to nextBlock after split
+    Block* nextBlock = (uintptr_t)block + sizeof(Block) + ALIGN(size);
+    
+    // Update pointer links
+    nextBlock->prev = block;
+    block->next = nextBlock;
+
+    // Update sizes of blocks
+    nextBlock->capacity = block->capacity - ALIGN(size) - sizeof(Block);
+    nextBlock->size = block->size - ALIGN(size) - sizeof(Block);
+
+    block->capacity = ALIGN(size);
+    block->size = size;
+    Counters[SPLITS]++;
+    Counters[BLOCKS]++;
     return block;
 }
 
