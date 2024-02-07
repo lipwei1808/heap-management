@@ -51,12 +51,12 @@ Block *	block_allocate(size_t size) {
 bool	block_release(Block *block) {
     // TODO: Implement block release
     // If block is within the heap
-    if (block->next != block) { 
-        
+    size_t allocated = block->capacity + sizeof(Block);
+    if (block->next != block || allocated < TRIM_THRESHOLD) { 
+        return false;
     }
 
     // If block is end of heap
-    size_t allocated = block->capacity + sizeof(Block);
     if (sbrk(-1 * (sizeof(Block) + block->capacity)) == SBRK_FAILURE) {
         return false;
     }
@@ -99,10 +99,21 @@ Block * block_detach(Block *block) {
  **/
 bool	block_merge(Block *dst, Block *src) {
     // TODO: Implement block merge
+    char* endOfDst = (char*)dst + sizeof(Block) + dst->capacity;
+    char* startOfSrc = (char*)src;
+    if (endOfDst != startOfSrc) {
+        return false;
+    }
+
+    dst->capacity += src->capacity + sizeof(Block);
+    dst->next = src->next;
+    if (src->next != NULL) {
+        src->next->prev = dst;
+    }
     
-    // Counters[MERGES]++;
-    // Counters[BLOCKS]--;
-    return false;
+    Counters[MERGES]++;
+    Counters[BLOCKS]--;
+    return true;
 }
 
 /**
@@ -124,7 +135,7 @@ Block * block_split(Block *block, size_t size) {
     }
 
     // Get ptr to nextBlock after split
-    Block* nextBlock = (uintptr_t)block + sizeof(Block) + ALIGN(size);
+    Block* nextBlock = (Block*)((uintptr_t)block + sizeof(Block) + ALIGN(size));
     
     // Update pointer links
     nextBlock->prev = block;
