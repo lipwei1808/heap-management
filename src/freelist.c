@@ -22,6 +22,11 @@ Block FreeList = {-1, -1, &FreeList, &FreeList};
  **/
 Block * free_list_search_ff(size_t size) {
     // TODO: Implement first fit algorithm
+    for (Block* cur = FreeList.next; cur != &FreeList; cur = cur->next) {
+        if (ALIGN(size) <= cur->capacity) {
+            return cur;
+        }
+    }
     return NULL;
 }
 
@@ -33,7 +38,17 @@ Block * free_list_search_ff(size_t size) {
  **/
 Block * free_list_search_bf(size_t size) {
     // TODO: Implement best fit algorithm
-    return NULL;
+    Block* best = NULL;
+    for (Block* cur = FreeList.next; cur != &FreeList; cur = cur->next) {
+        if (size > cur->capacity) continue;
+
+        if (best == NULL) {
+            best = cur;
+        } else if (best->capacity > cur->capacity) {
+            best = cur;
+        }
+    }
+    return best;
 }
 
 /**
@@ -44,7 +59,17 @@ Block * free_list_search_bf(size_t size) {
  **/
 Block * free_list_search_wf(size_t size) {
     // TODO: Implement worst fit algorithm
-    return NULL;
+    Block* worst = NULL;
+    for (Block* cur = FreeList.next; cur != &FreeList; cur = cur->next) {
+        if (size > cur->capacity) continue;
+
+        if (worst == NULL) {
+            worst = cur;
+        } else if (worst->capacity < cur->capacity) {
+            worst = cur;
+        }
+    }
+    return worst;
 }
 
 /**
@@ -85,6 +110,24 @@ Block * free_list_search(size_t size) {
  **/
 void	free_list_insert(Block *block) {
     // TODO: Implement free list insertion
+    Block* cur = &FreeList;
+    bool found = false;
+    while (cur->next != &FreeList) {
+        if (block_merge(cur, block)) {
+            found = true;
+            break;
+        }
+
+        cur = cur->next;
+    }
+
+    if (!found) {
+        Block* prev = FreeList.prev;
+        prev->next = block;
+        block->prev = prev;
+        block->next = &FreeList;
+        FreeList.prev = block;
+    }
 }
 
 /**
@@ -93,7 +136,13 @@ void	free_list_insert(Block *block) {
  **/
 size_t  free_list_length() {
     // TODO: Implement free list length
-    return 0;
+    int ans = 1;
+    Block* cur = &FreeList;
+    while (cur->next != &FreeList) {
+        ans++;
+        cur = cur->next;
+    }
+    return ans;
 }
 
 /* vim: set expandtab sts=4 sw=4 ts=8 ft=c: */
