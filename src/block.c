@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include <limits.h>
+
 /**
  * Allocate a new block on the heap using sbrk:
  *
@@ -19,6 +21,9 @@
  * @return  Pointer to data portion of newly allocate block.
  **/
 Block *	block_allocate(size_t size) {
+    if (size >= LONG_MAX) {
+        return NULL;
+    }
     // Allocate block
     intptr_t allocated = sizeof(Block) + ALIGN(size);
     Block *  block     = sbrk(allocated);
