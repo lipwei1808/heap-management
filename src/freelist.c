@@ -110,15 +110,12 @@ Block * free_list_search(size_t size) {
  **/
 void	free_list_insert(Block *block) {
     // TODO: Implement free list insertion
-    Block* cur = &FreeList;
     bool found = false;
-    while (cur->next != &FreeList) {
+    for (Block* cur = FreeList.next; cur != &FreeList; cur = cur->next) {
         if (block_merge(cur, block)) {
             found = true;
             break;
         }
-
-        cur = cur->next;
     }
 
     if (!found) {
@@ -136,11 +133,10 @@ void	free_list_insert(Block *block) {
  **/
 size_t  free_list_length() {
     // TODO: Implement free list length
-    int ans = 1;
-    Block* cur = &FreeList;
-    while (cur->next != &FreeList) {
+    int ans = 0;
+    
+    for (Block* cur = FreeList.next; cur != &FreeList; cur = cur->next) {
         ans++;
-        cur = cur->next;
     }
     return ans;
 }

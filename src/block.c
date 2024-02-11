@@ -111,11 +111,6 @@ bool	block_merge(Block *dst, Block *src) {
     }
 
     dst->capacity += src->capacity + sizeof(Block);
-    dst->next = src->next;
-    if (src->next != NULL) {
-        src->next->prev = dst;
-    }
-    
     Counters[MERGES]++;
     Counters[BLOCKS]--;
     return true;
