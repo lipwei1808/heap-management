@@ -26,7 +26,7 @@ void *malloc(size_t size) {
     if (block == NULL) {
         block = block_allocate(size);
     } else {
-        block =block_detach(block);
+        block = block_detach(block);
     }
 
     // Could not find free block or allocate a block, so just return NULL
@@ -64,7 +64,7 @@ void free(void *ptr) {
     bool success = block_release(BLOCK_FROM_POINTER(ptr));
     if (success) return;
 
-    free_list_insert(ptr);
+    free_list_insert(BLOCK_FROM_POINTER(ptr));
 }
 
 /**
