@@ -55,9 +55,11 @@ Block *	block_allocate(size_t size) {
  **/
 bool	block_release(Block *block) {
     // TODO: Implement block release
+    char* heap_top = sbrk(0);
+    char* block_end = (char*)block + sizeof(Block) + block->capacity;
     // If block is within the heap
     size_t allocated = block->capacity + sizeof(Block);
-    if (block->next != block || allocated < TRIM_THRESHOLD) { 
+    if (heap_top != block_end || allocated < TRIM_THRESHOLD) { 
         return false;
     }
 

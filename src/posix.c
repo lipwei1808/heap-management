@@ -5,6 +5,7 @@
 
 #include <assert.h>
 #include <string.h>
+#include <stdio.h>
 
 /**
  * Allocate specified amount memory.
@@ -21,7 +22,12 @@ void *malloc(size_t size) {
     }
 
     // TODO: Search free list for any available block with matching size
-    Block *block = block_allocate(size);
+    Block* block = free_list_search(size);
+    if (block == NULL) {
+        block = block_allocate(size);
+    } else {
+        block =block_detach(block);
+    }
 
     // Could not find free block or allocate a block, so just return NULL
     if (!block) {
@@ -55,6 +61,10 @@ void free(void *ptr) {
     Counters[FREES]++;
 
     // TODO: Try to release block, otherwise insert it into the free list
+    bool success = block_release(BLOCK_FROM_POINTER(ptr));
+    if (success) return;
+
+    free_list_insert(ptr);
 }
 
 /**
@@ -66,7 +76,10 @@ void free(void *ptr) {
  **/
 void *calloc(size_t nmemb, size_t size) {
     // TODO: Implement calloc
-    // Counters[CALLOCS]++;
+    size_t s = size * nmemb;
+    void* ptr = malloc(s);
+    memset(ptr, 0, s);
+    Counters[CALLOCS]++;
     return NULL;
 }
 
@@ -78,8 +91,23 @@ void *calloc(size_t nmemb, size_t size) {
  **/
 void *realloc(void *ptr, size_t size) {
     // TODO: Implement realloc
+    if (ptr == NULL) {
+        return malloc(size);
+    }
+
+    Block* block = BLOCK_FROM_POINTER(ptr);
+    if (block->capacity >= size) {
+        return ptr;
+    }
+
+    void* new_block = malloc(size);
+    if (new_block == NULL) {
+        return NULL;
+    }
+    memcpy(new_block, ptr, block->size);
+    free(block);
     // Counters[REALLOCS]++;
-    return NULL;
+    return new_block;
 }
 
 /* vim: set expandtab sts=4 sw=4 ts=8 ft=c: */
