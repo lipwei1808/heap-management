@@ -142,6 +142,7 @@ Block * block_split(Block *block, size_t size) {
     // Update pointer links
     nextBlock->prev = block;
     block->next = nextBlock;
+    nextBlock->next = block->next;
 
     // Update sizes of blocks
     nextBlock->capacity = block->capacity - ALIGN(size) - sizeof(Block);

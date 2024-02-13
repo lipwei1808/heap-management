@@ -26,6 +26,7 @@ void *malloc(size_t size) {
     if (block == NULL) {
         block = block_allocate(size);
     } else {
+        block = block_split(block, size);
         block = block_detach(block);
     }
 
