@@ -132,7 +132,8 @@ bool	block_merge(Block *dst, Block *src) {
  **/
 Block * block_split(Block *block, size_t size) {
     // TODO: Implement block split
-    if (block->capacity < ALIGN(size) + sizeof(Block)) {
+    if (block->capacity <= ALIGN(size) + sizeof(Block)) {
+        block->size = size;
         return block;
     }
 
@@ -141,8 +142,8 @@ Block * block_split(Block *block, size_t size) {
     
     // Update pointer links
     nextBlock->prev = block;
-    block->next = nextBlock;
     nextBlock->next = block->next;
+    block->next = nextBlock;
 
     // Update sizes of blocks
     nextBlock->capacity = block->capacity - ALIGN(size) - sizeof(Block);
