@@ -116,6 +116,16 @@ void	free_list_insert(Block *block) {
             found = true;
             break;
         }
+        Block* prev = cur->prev;
+        Block* next = cur->next;
+        if (block_merge(block, cur)) {
+            found = true;
+            block->prev = prev;
+            block->next = next;
+            prev->next = block;
+            next->prev = block;
+            break;
+        }
     }
 
     if (!found) {

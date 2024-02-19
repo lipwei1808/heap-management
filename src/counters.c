@@ -46,7 +46,13 @@ void init_counters() {
  **/
 double  internal_fragmentation() {
     // TODO: Implement internal fragmentation computation
-    return 0;
+    if (Counters[HEAP_SIZE] == 0) return 0;
+
+    size_t fragment = 0;
+    for (Block* cur = FreeList.next; cur != &FreeList; cur = cur->next) {
+        fragment += cur->capacity - cur->size;
+    }
+    return ((double)fragment / Counters[HEAP_SIZE]) * 100;
 }
 
 /**
