@@ -66,7 +66,18 @@ double  internal_fragmentation() {
  **/
 double  external_fragmentation() {
     // TODO: Implement external fragmentation computation
-    return 0;
+    size_t largest = 0;
+    size_t total = 0;
+    for (Block* cur = FreeList.next; cur != &FreeList; cur = cur->next) {
+        if (cur->capacity > largest) {
+            largest = cur->capacity;
+        }
+        total += cur->capacity;
+    }
+
+    if (total == 0) return 0;
+
+    return (1 - (double)largest / total) * 100;
 }
 
 /**
