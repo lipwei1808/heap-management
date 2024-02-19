@@ -16,6 +16,8 @@
  *  1. Determined aligned amount of memory to allocate.
  *  2. Allocate memory on the heap.
  *  3. Set allocage block properties.
+ * block_split block: 0x563346eda640, 
+ * block->next: 0x563346eda800, block->prev: 0x563346eda000
  *
  * @param   size    Number of bytes to allocate.
  * @return  Pointer to data portion of newly allocate block.
@@ -143,6 +145,7 @@ Block * block_split(Block *block, size_t size) {
     // Update pointer links
     nextBlock->prev = block;
     nextBlock->next = block->next;
+    nextBlock->next->prev = nextBlock;
     block->next = nextBlock;
 
     // Update sizes of blocks
